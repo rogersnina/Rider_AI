@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Image Carousel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .carousel {
+      position: relative;
+      width: 80%;
+      max-width: 800px;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .slides {
+      display: flex;
+      width: 300%;
+      transition: transform 0.5s ease-in-out;
+    }
+
+    .slides img {
+      width: 100%;
+      height: auto;
+    }
+
+    .controls {
+      margin-top: 20px;
+    }
+
+    .controls button {
+      padding: 10px 20px;
+      margin: 0 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #333;
+      color: #fff;
+    }
+
+    .controls button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📸 Image Carousel</h1>
+  <div class="carousel">
+    <div class="slides" id="slideContainer">
+      <img src="/mnt/data/102927816-colorful-horizontal-banner-with-hands-typing-on-laptop-and-holding-tablet-computer-and-various-offic.jpg" alt="Online Education">
+      <img src="/mnt/data/computer-skills1.jpeg" alt="Typing on Laptop">
+      <img src="/mnt/data/lukas-vanatko-Xw9X9gaurCY-unsplash.jpg" alt="Lego Ninja">
+    </div>
+  </div>
+  <div class="controls">
+    <button onclick="prevSlide()">⬅ Prev</button>
+    <button onclick="nextSlide()">Next ➡</button>
+  </div>
+
+  <script>
+    let currentIndex = 0;
+    const slides = document.getElementById('slideContainer');
+    const totalSlides = slides.children.length;
+
+    function showSlide(index) {
+      const offset = -index * 100;
+      slides.style.transform = `translateX(${offset}%)`;
+    }
+
+    function nextSlide() {
+      currentIndex = (currentIndex + 1) % totalSlides;
+      showSlide(currentIndex);
+    }
+
+    function prevSlide() {
+      currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+      showSlide(currentIndex);
+    }
+
+    // Auto-advance every 5 seconds
+    setInterval(nextSlide, 5000);
+  </script>
+
+</body>
+</html>
