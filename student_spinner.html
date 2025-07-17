@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Name Spinner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .spinner-container {
+            position: relative;
+            margin: 40px auto;
+            width: 300px;
+            height: 300px;
+        }
+
+        .spinner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 8px solid #333;
+            position: relative;
+            transition: transform 4s cubic-bezier(0.23, 1, 0.320, 1);
+        }
+
+        .spinner-segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            font-size: 14px;
+            overflow: hidden;
+        }
+
+        .spinner-pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #ff4757;
+            z-index: 10;
+        }
+
+        .controls {
+            margin: 30px 0;
+        }
+
+        .name-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 200px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .spin-button {
+            background: linear-gradient(45deg, #ff4757, #ff6b7a);
+            font-size: 20px;
+            padding: 15px 30px;
+            margin: 20px 10px;
+        }
+
+        .spin-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .student-list {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .student-item {
+            display: inline-block;
+            background: #f8f9fa;
+            padding: 8px 12px;
+            margin: 4px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .remove-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            margin-left: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(45deg, #2ed573, #7bed9f);
+            border-radius: 12px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .settings {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .settings h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Student Name Spinner</h1>
+        
+        <div class="spinner-container">
+            <div class="spinner-pointer"></div>
+            <div class="spinner" id="spinner"></div>
+        </div>
+
+        <div class="controls">
+            <div class="name-input">
+                <input type="text" id="nameInput" placeholder="Enter student name..." onkeypress="handleKeyPress(event)">
+                <button onclick="addName()">Add Student</button>
+            </div>
+            
+            <button class="spin-button" onclick="spinWheel()" id="spinBtn">🎲 SPIN THE WHEEL!</button>
+            <button onclick="clearAll()">Clear All</button>
+        </div>
+
+        <div class="settings">
+            <h3>Settings</h3>
+            <div class="checkbox-group">
+                <input type="checkbox" id="removeAfterSpin" checked>
+                <label for="removeAfterSpin">Remove student after being selected</label>
+            </div>
+        </div>
+
+        <div class="result" id="result"></div>
+
+        <div class="student-list">
+            <h3>Current Students (<span id="studentCount">0</span>):</h3>
+            <div id="studentDisplay"></div>
+        </div>
+    </div>
+
+    <script>
+        let students = [];
+        let isSpinning = false;
+        
+        const colors = [
+            '#ff6b7a', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b',
+            '#eb4d4b', '#6c5ce7', '#a29bfe', '#fd79a8', '#e84393',
+            '#00b894', '#00cec9', '#74b9ff', '#0984e3', '#a29bfe'
+        ];
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                addName();
+            }
+        }
+
+        function addName() {
+            const input = document.getElementById('nameInput');
+            const name = input.value.trim();
+            
+            if (name && !students.includes(name)) {
+                students.push(name);
+                input.value = '';
+                updateDisplay();
+                updateSpinner();
+            }
+        }
+
+        function removeName(name) {
+            students = students.filter(s => s !== name);
+            updateDisplay();
+            updateSpinner();
+            hideResult();
+        }
+
+        function updateDisplay() {
+            const display = document.getElementById('studentDisplay');
+            const count = document.getElementById('studentCount');
+            
+            count.textContent = students.length;
+            
+            if (students.length === 0) {
+                display.innerHTML = '<p style="text-align: center; color: #666; font-style: italic;">No students added yet. Add some names to get started!</p>';
+            } else {
+                display.innerHTML = students.map(name => 
+                    `<span class="student-item">${name}<button class="remove-btn" onclick="removeName('${name}')">×</button></span>`
+                ).join('');
+            }
+        }
+
+        function updateSpinner() {
+            const spinner = document.getElementById('spinner');
+            const spinBtn = document.getElementById('spinBtn');
+            
+            if (students.length === 0) {
+                spinner.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">Add students to spin!</div>';
+                spinBtn.disabled = true;
+                return;
+            }
+            
+            spinBtn.disabled = false;
+            const segmentAngle = 360 / students.length;
+            
+            spinner.innerHTML = students.map((name, index) => {
+                const rotation = index * segmentAngle;
+                const color = colors[index % colors.length];
+                
+                return `
+                    <div class="spinner-segment" style="
+                        transform: rotate(${rotation}deg) skew(${90 - segmentAngle}deg);
+                        background-color: ${color};
+                    ">
+                        <div style="transform: skew(${-(90 - segmentAngle)}deg) rotate(${segmentAngle/2}deg); width: 100%; text-align: center;">
+                            ${name}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function spinWheel() {
+            if (students.length === 0 || isSpinning) return;
+            
+            isSpinning = true;
+            const spinBtn = document.getElementById('spinBtn');
+            spinBtn.disabled = true;
+            hideResult();
+            
+            const spinner = document.getElementById('spinner');
+            const segmentAngle = 360 / students.length;
+            
+            // Random number of full rotations (3-6) plus random position
+            const randomRotations = Math.floor(Math.random() * 4) + 3;
+            const randomAngle = Math.random() * 360;
+            const totalRotation = randomRotations * 360 + randomAngle;
+            
+            spinner.style.transform = `rotate(${totalRotation}deg)`;
+            
+            setTimeout(() => {
+                // Calculate which student was selected
+                const normalizedAngle = (360 - (totalRotation % 360)) % 360;
+                const selectedIndex = Math.floor(normalizedAngle / segmentAngle);
+                const selectedStudent = students[selectedIndex];
+                
+                showResult(selectedStudent);
+                
+                // Remove student if setting is enabled
+                if (document.getElementById('removeAfterSpin').checked) {
+                    setTimeout(() => {
+                        removeName(selectedStudent);
+                    }, 1500);
+                }
+                
+                isSpinning = false;
+                spinBtn.disabled = students.length === 0;
+            }, 4000);
+        }
+
+        function showResult(student) {
+            const result = document.getElementById('result');
+            result.innerHTML = `🎉 Selected: <strong>${student}</strong> 🎉`;
+            result.style.display = 'block';
+        }
+
+        function hideResult() {
+            const result = document.getElementById('result');
+            result.style.display = 'none';
+        }
+
+        function clearAll() {
+            students = [];
+            updateDisplay();
+            updateSpinner();
+            hideResult();
+            document.getElementById('spinner').style.transform = 'rotate(0deg)';
+        }
+
+        // Initialize
+        updateDisplay();
+        updateSpinner();
+    </script>
+</body>
+</html>
